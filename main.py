@@ -7,8 +7,4 @@ app=FastAPI()
 
 app.include_router(task.router)
 
-@app.get('/')
-def index():
-    return'Hello world!'
-
 models.Base.metadata.create_all(engine)

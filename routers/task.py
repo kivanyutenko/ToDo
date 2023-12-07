@@ -11,24 +11,24 @@ router=APIRouter( prefix='/task',
                  tags=['task'])
 
 #Create task
-@router.post('/',response_model=TaskDisplay)
+@router.post('/create',response_model=TaskDisplay)
 def create_task(request: TaskBase, db: Session=Depends(get_db)):
-    return db_tasks.create_user(db,request)
+    return db_tasks.create_task(db,request)
 
 #Read all tasks
-@router.get('/',response_model=List[TaskDisplay])
+@router.get('/all',response_model=List[TaskDisplay])
 def get_all_tasks(db:Session=Depends(get_db)):
-    return db_tasks.get_all_users(db)
+    return db_tasks.get_all_tasks(db)
 
 #Read one task
 @router.get('/{id}',response_model=TaskDisplay)
 def get_task(id:int,db:Session=Depends(get_db)):
-    return db_tasks.get_user(db,id)
+    return db_tasks.get_task(db,id)
 #Update tasks
 @router.patch('/{id}/update')
-def update_task(id:int,request:TaskBase,db:Session=Depends(get_db)):
-    return db_tasks.update_user(db,id,request)
+def update_task(id:int,request:TaskDisplay,db:Session=Depends(get_db)):
+    return db_tasks.update_task(db,id,request)
 #Delete user
 @router.delete('/delete/{id}')
 def delete_task(id:int,db:Session=Depends(get_db)):
-    return db_tasks.delete_user(db,id)
+    return db_tasks.delete_task(db,id)
