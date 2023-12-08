@@ -9,4 +9,11 @@ class DbTask(Base):
     id=Column(Integer, primary_key=True, index=True)
     title=Column(String)
     description=Column(String)
-    status=Column(String)
+    task_status=Column(String)
+    priority=Column(String)
+    folder=Column(String)
+
+# class DbFolder(Base):
+#     __tablename__='folders'
+#     id=Column(Integer, primary_key=True, index=True)
+#     title=Column(String)
