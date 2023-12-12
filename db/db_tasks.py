@@ -1,5 +1,5 @@
 from sqlalchemy.orm.session import Session
-from db.models import DbTask
+from db.models import DbFolder, DbTask
 from schemas import TaskBase
 from fastapi import HTTPException,status
 
@@ -9,7 +9,7 @@ def create_task(db:Session,request:TaskBase,option):
         description=request.description,
         task_status='New',
         priority=option,
-        folder='Main'
+        folder_id=1
     )
     db.add(new_task)
     db.commit()
@@ -52,6 +52,19 @@ def update_priority_task(db:Session,id:int,request:str):
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f'Task with id {id} not found')  
     task.update({
      DbTask.priority:request,
+    })
+    db.commit()
+    return 'Success'
+
+def update_folder_task(db:Session,id:int,request:str):
+    task=db.query(DbTask).filter(DbTask.id==id)
+    folder=db.query(DbFolder).filter(DbFolder.id==request)
+    if not task.first():
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f'Task with id {id} not found') 
+    if not folder.first():
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f'Folder with id {request} not found')  
+    task.update({
+     DbTask.folder_id:request,
     })
     db.commit()
     return 'Success'
