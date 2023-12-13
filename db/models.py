@@ -12,8 +12,9 @@ class DbTask(Base):
     task_status=Column(String)
     priority=Column(String)
     folder_id=Column(Integer, ForeignKey("folders.id", ondelete='CASCADE'))
-    folder=relationship("DbFolder", back_populates="tasks")
-   # user = relationship("DbUser", back_populates='items')
+    folder=relationship("DbFolder", back_populates="tasks", foreign_keys=[folder_id])
+    user_id=Column(Integer, ForeignKey("users.id", ondelete='CASCADE'))
+    user = relationship("DbUser", back_populates='items',foreign_keys=[user_id])
 
    # due_date = Column(DateTime(timezone=True), default=func.now())
 
@@ -22,7 +23,7 @@ class DbFolder(Base):
     __tablename__='folders'
     id=Column(Integer, primary_key=True, index=True)
     title=Column(String,index=True)
-    tasks = relationship("DbTask", back_populates="folder")
+    tasks = relationship("DbTask", back_populates="folder", foreign_keys=[DbTask.folder_id])
 
 class DbUser(Base):
   __tablename__ = 'users'
@@ -30,4 +31,4 @@ class DbUser(Base):
   username = Column(String)
   email = Column(String)
   password = Column(String)
-  #items = relationship('DbTask', back_populates='user')
+  items = relationship('DbTask', back_populates='user', foreign_keys=[DbTask.user_id])

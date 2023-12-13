@@ -1,10 +1,11 @@
 from typing import List
+from db.models import DbUser
 from schemas import UserBase, UserDisplay
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 from db.database import get_db
 from db import db_user
-from auth.oauth2 import oauth2_scheme
+from auth.oauth2 import get_current_user, oauth2_scheme
 
 
 
@@ -31,10 +32,12 @@ def get_user(id: int, db: Session = Depends(get_db), token: str = Depends(oauth2
 
 # Update user
 @router.put('/{id}/update')
-def update_user(id: int, request: UserBase, db: Session = Depends(get_db), token: str = Depends(oauth2_scheme)):
-  return db_user.update_user(db, id, request)
+def update_user(id: int, request: UserBase, db: Session = Depends(get_db), 
+                token: str = Depends(oauth2_scheme),current_user: DbUser = Depends(get_current_user)):
+  return db_user.update_user(db, id, request,current_user)
 
 # Delete user
 @router.delete('/delete/{id}')
-def delete(id: int, db: Session = Depends(get_db), token: str = Depends(oauth2_scheme)):
-  return db_user.delete_user(db, id)
+def delete(id: int, db: Session = Depends(get_db), 
+           token: str = Depends(oauth2_scheme),current_user: DbUser = Depends(get_current_user)):
+  return db_user.delete_user(db, id,current_user)
