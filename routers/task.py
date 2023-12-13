@@ -32,8 +32,8 @@ def update_task(id:int,request:TaskBase,db:Session=Depends(get_db)):
 
 #Update status of task
 @router.put("/{id}/choose_status")
-def update_status(id:int,db:Session=Depends(get_db), priority: str = Query(..., enum=['New', 'In progress', 'Done'])):
-    return db_tasks.update_status_task(db,id,priority)
+def update_status(id:int,db:Session=Depends(get_db), status: str = Query(..., enum=['New', 'In progress', 'Done'])):
+    return db_tasks.update_status_task(db,id,status)
 
 #Update folder of task
 @router.put("/{id}/change_folder")
@@ -42,8 +42,8 @@ def change_folder(id:int,db:Session=Depends(get_db), folder_id: str = Query(...)
 
 #Update priority of task
 @router.put("/{id}/priority")
-def update_priority(id:int,db:Session=Depends(get_db), option: str = Query(..., enum=['Low', 'Normal', 'High','Critical'])):
-    return db_tasks.update_priority_task(db,id,option)
+def update_priority(id:int,db:Session=Depends(get_db), priority: str = Query(..., enum=['Low', 'Normal', 'High','Critical'])):
+    return db_tasks.update_priority_task(db,id,priority)
 
 #Delete user
 @router.delete('/{id}/delete')

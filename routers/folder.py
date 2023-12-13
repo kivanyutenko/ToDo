@@ -21,7 +21,7 @@ def get_all_folders(db:Session=Depends(get_db)):
 def get_folder(folder_id:int,db:Session=Depends(get_db)):
     return db_folders.get_folder(db,folder_id)
 
- #Update name of folder
+#Update name of folder
 @router.put('/{id}/update')
 def update_folder(id:int,Folder_name:str,db:Session=Depends(get_db)):
     return db_folders.update_folder(db,id,Folder_name)

@@ -5,6 +5,7 @@ from fastapi import HTTPException,status
 from sqlalchemy.orm import joinedload
 from sqlalchemy_utils import database_exists
 
+#Adding 'Main' in table folders
 db=SessionLocal()
 if database_exists('sqlite:///./tasks_database.db'): 
     main_folder=db.query(DbFolder).filter(DbFolder.title=='Main').first()
@@ -15,6 +16,7 @@ if database_exists('sqlite:///./tasks_database.db'):
         db.refresh(main_folder)
 db.close()
 
+#Create new folder
 def create_folder(db:Session,folder_name:str):
     new_folder=DbFolder(
         title=folder_name,
@@ -24,10 +26,12 @@ def create_folder(db:Session,folder_name:str):
     db.refresh(new_folder)
     return new_folder
 
+#Read all folders and tasks
 def get_all_folders(db:Session):
     folders_with_tasks = db.query(DbFolder).options(joinedload(DbFolder.tasks)).all()
     return {'folders': folders_with_tasks}
 
+#Read specific folder and tasks from it
 def get_folder(db:Session,id:int):
     folder=db.query(DbFolder).filter(DbFolder.id==id).first()
     if not folder:
@@ -35,6 +39,7 @@ def get_folder(db:Session,id:int):
     tasks=db.query(DbTask).filter(DbTask.folder_id==id).all() 
     return {'folder':folder,'tasks':tasks}
 
+#Update name of the folder
 def update_folder(db:Session,id:int,request:str):
     folder=db.query(DbFolder).filter(DbFolder.id==id)
     if not folder.first():
@@ -45,6 +50,7 @@ def update_folder(db:Session,id:int,request:str):
     db.commit()
     return 'Success'
 
+#Delete specific folder and replace it in table tasks to 'Main'
 def delete_folder(db:Session,id:int):
     folder=db.query(DbFolder).filter(DbFolder.id==id).first()
     if not folder:
