@@ -28,7 +28,7 @@ class DbFolder(Base):
 class DbUser(Base):
   __tablename__ = 'users'
   id = Column(Integer, primary_key=True, index=True)
-  username = Column(String)
+  username = Column(String )
   email = Column(String)
   password = Column(String)
   items = relationship('DbTask', back_populates='user', foreign_keys=[DbTask.user_id])
