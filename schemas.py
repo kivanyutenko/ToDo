@@ -17,8 +17,8 @@ class FolderDisplay(BaseModel):
     title:str
 
 class UserBase(BaseModel):
-  username: str
-  email: str
+  username: str='User'
+  email: str='user@gmail.com'
   password: str
 
 class UserDisplay(BaseModel):
