@@ -1,3 +1,4 @@
+from db.db_tasks import delete_tasks_for_user
 from db.hash import Hash
 from sqlalchemy.orm.session import Session
 from schemas import UserBase
@@ -55,6 +56,7 @@ def delete_user(db: Session, id: int,current_user):
       detail=f'User with id {id} not found')
   if current_user.id != id:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail='You are not allowed to delete this user')
+  delete_tasks_for_user(db, current_user)
   db.delete(user)
   db.commit()
   return 'Success'

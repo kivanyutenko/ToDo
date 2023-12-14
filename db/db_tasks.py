@@ -1,5 +1,5 @@
 from sqlalchemy.orm.session import Session
-from db.models import DbFolder, DbTask
+from db.models import DbFolder, DbTask, DbUser
 from schemas import TaskBase
 from fastapi import  HTTPException,status
 
@@ -99,3 +99,12 @@ def delete_task(db:Session,id:int, current_user):
     db.delete(task)
     db.commit()
     return 'Success'
+
+def delete_tasks_for_user(db: Session, current_user):
+    user = db.query(DbUser).filter(DbUser.id == current_user.id).first()
+    if user:
+        tasks_to_delete = db.query(DbTask).filter(DbTask.user_id == current_user.id).all()
+        for task in tasks_to_delete:
+            db.delete(task)
+        db.commit()
+        return 'Success'

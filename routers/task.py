@@ -55,3 +55,8 @@ def update_priority(id:int,db:Session=Depends(get_db), priority: str = Query(...
 @router.delete('/{id}/delete')
 def delete_task(id:int,db:Session=Depends(get_db), token: str = Depends(oauth2_scheme),current_user: DbUser = Depends(get_current_user)):
     return db_tasks.delete_task(db,id,current_user)
+
+#Delete all tasks
+@router.delete('/delete_all')
+def delete_all_tasks(db:Session=Depends(get_db), token: str = Depends(oauth2_scheme),current_user: DbUser = Depends(get_current_user)):
+    return db_tasks.delete_tasks_for_user(db,current_user)
