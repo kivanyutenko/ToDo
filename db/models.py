@@ -13,7 +13,7 @@ class DbTask(Base):
     priority=Column(String)
     folder_id=Column(Integer, ForeignKey("folders.id", ondelete='CASCADE'))
     folder=relationship("DbFolder", back_populates="tasks", foreign_keys=[folder_id])
-    user_id=Column(Integer, ForeignKey("users.id", ondelete='CASCADE'))
+    user_id=Column(Integer, ForeignKey("users.id", ondelete='CASCADE')) 
     user = relationship("DbUser", back_populates='items',foreign_keys=[user_id])
 
    # due_date = Column(DateTime(timezone=True), default=func.now())

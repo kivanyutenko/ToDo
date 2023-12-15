@@ -2,7 +2,7 @@
 from pydantic import BaseModel
 
 class TaskBase(BaseModel):
-    title:str='Name the task'
+    title:str='Task'
     description:str='Something to do'
 
 class TaskDisplay(BaseModel):

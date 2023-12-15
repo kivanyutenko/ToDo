@@ -33,61 +33,29 @@ def get_task(db:Session,id:int,current_user):
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail='You are not allowed to read this task')  
     return task
 
-#Update title and description of task
-def update_task(db:Session,id:int,request:TaskBase,current_user):
+#Update  task
+def update_task(id:int,request:TaskBase,db:Session,status:str,priority:str,folder_id:int,current_user):
     task=db.query(DbTask).filter(DbTask.id==id).first()
+    folder=db.query(DbFolder).filter(DbFolder.id==folder_id).first()
     if not task:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f'Task with id {id} not found')
+    if not folder:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f'Folder with id {request} not found') 
     if current_user.id != task.user_id:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail='You are not allowed to update this task')
     db.query(DbTask).filter(DbTask.id == id).update({
         DbTask.title: request.title,
-        DbTask.description: request.description
+        DbTask.description: request.description,
+        DbTask.task_status:status,
+        DbTask.priority:priority,
+        DbTask.folder_id:folder_id
     })
     db.commit()
     return 'Success'
 
-#Update status of task
-def update_status_task(db:Session,id:int,request:str,current_user):
-    task=db.query(DbTask).filter(DbTask.id==id).first()
-    if not task:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f'Task with id {id} not found')  
-    if current_user.id != task.user_id:
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail='You are not allowed to update status of this task')
-    db.query(DbTask).filter(DbTask.id == id).update({
-     DbTask.task_status:request,
-    })
-    db.commit()
-    return 'Success'
-
-#Update the priority of task
-def update_priority_task(db:Session,id:int,request:str,current_user):
-    task=db.query(DbTask).filter(DbTask.id==id ).first()
-    if not task:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f'Task with id {id} not found')
-    if current_user.id != task.user_id:
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail='You are not allowed to update the priority of this task')  
-    db.query(DbTask).filter(DbTask.id == id).update({
-     DbTask.priority:request,
-    })
-    db.commit()
-    return 'Success'
-
-#Place task in other folder
-def update_folder_task(db:Session,id:int,request:str,current_user):
-    task=db.query(DbTask).filter(DbTask.id==id ).first()
-    folder=db.query(DbFolder).filter(DbFolder.id==request)
-    if not task:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f'Task with id {id} not found') 
-    if not folder.first():
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f'Folder with id {request} not found')  
-    if current_user.id != task.user_id:
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail='You are not allowed to place this task in the folder')
-    db.query(DbTask).filter(DbTask.id == id).update({
-     DbTask.folder_id:request,
-    })
-    db.commit()
-    return 'Success'
+def get_current_status_somehow(task_id: int, db: Session) -> str:
+    task = db.query(DbTask).filter(DbTask.id == task_id).first()
+    return task.status
 
 #Delete task
 def delete_task(db:Session,id:int, current_user):
@@ -100,7 +68,7 @@ def delete_task(db:Session,id:int, current_user):
     db.commit()
     return 'Success'
 
-def delete_tasks_for_user(db: Session, current_user):
+def delete_all_tasks(db: Session, current_user):
     user = db.query(DbUser).filter(DbUser.id == current_user.id).first()
     if user:
         tasks_to_delete = db.query(DbTask).filter(DbTask.user_id == current_user.id).all()

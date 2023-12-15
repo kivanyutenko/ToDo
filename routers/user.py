@@ -28,13 +28,13 @@ def get_user(id: int, db: Session = Depends(get_db), token: str = Depends(oauth2
   return db_user.get_user(db, id)
 
 # Update user
-@router.put('/{id}/update')
+@router.put('/{id}')
 def update_user(id: int, request: UserBase, db: Session = Depends(get_db), 
                 token: str = Depends(oauth2_scheme),current_user: DbUser = Depends(get_current_user)):
   return db_user.update_user(db, id, request,current_user)
 
 # Delete user
-@router.delete('/{id}/delete')
+@router.delete('/{id}')
 def delete(id: int, db: Session = Depends(get_db), 
            token: str = Depends(oauth2_scheme),current_user: DbUser = Depends(get_current_user)):
   return db_user.delete_user(db, id,current_user)
