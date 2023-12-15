@@ -1,3 +1,4 @@
+from datetime import date, datetime, time
 from fastapi import APIRouter, Depends,Query
 from db.models import DbUser
 from schemas import TaskBase, TaskDisplay
@@ -37,10 +38,16 @@ def update_task(id:int,
                 db:Session=Depends(get_db),
                 status: str = Query('New', enum=['New', 'In progress', 'Done']),
                 priority: str = Query('Normal', enum=['Low', 'Normal', 'High','Critical']),
-                folder_id:int=Query("1"), 
+                folder_id:int=Query("1"),
+                flag:bool=Query(False,enum=[False,True]), 
                 token: str = Depends(oauth2_scheme),
-                current_user: DbUser = Depends(get_current_user)):
-    return db_tasks.update_task(id,request,db,status,priority,folder_id,current_user)
+                current_user: DbUser = Depends(get_current_user),
+                date: str = Query(..., alias="dd.mm.yyyy"),
+                time:str=Query(...,alias="hh:mm")
+):
+    date_iso = datetime.strptime(date, "%d.%m.%Y").date()
+    time_iso = datetime.strptime(time, "%H:%M").time()
+    return db_tasks.update_task(id,request,db,status,priority,flag,date_iso,time_iso,folder_id,current_user)
 
 @router.delete('/{id}')
 def delete_task(id:int=None, db: Session = Depends(get_db),delete_all:bool=Query(...,enum=[False,True]), token: str = Depends(oauth2_scheme), current_user: DbUser = Depends(get_current_user)):

@@ -1,3 +1,4 @@
+from datetime import datetime,date,time
 from sqlalchemy.orm.session import Session
 from db.models import DbFolder, DbTask, DbUser
 from schemas import TaskBase
@@ -10,8 +11,11 @@ def create_task(db:Session,request:TaskBase,option,current_user):
         description=request.description,
         task_status='New',
         priority=option,
+        flag=False,
+        date=datetime.now().date(),
+        time=datetime.now().time(),
         folder_id=1,
-        user_id=current_user.id 
+        user_id=current_user.id
     )
     db.add(new_task)
     db.commit()
@@ -34,7 +38,7 @@ def get_task(db:Session,id:int,current_user):
     return task
 
 #Update  task
-def update_task(id:int,request:TaskBase,db:Session,status:str,priority:str,folder_id:int,current_user):
+def update_task(id:int,request:TaskBase,db:Session,status:str,priority:str,flag:bool,date_iso,time_iso,folder_id:int,current_user):
     task=db.query(DbTask).filter(DbTask.id==id).first()
     folder=db.query(DbFolder).filter(DbFolder.id==folder_id).first()
     if not task:
@@ -48,7 +52,10 @@ def update_task(id:int,request:TaskBase,db:Session,status:str,priority:str,folde
         DbTask.description: request.description,
         DbTask.task_status:status,
         DbTask.priority:priority,
-        DbTask.folder_id:folder_id
+        DbTask.flag:flag,
+        DbTask.folder_id:folder_id,
+        DbTask.date:date_iso,
+        DbTask.time:time_iso
     })
     db.commit()
     return 'Success'

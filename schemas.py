@@ -1,4 +1,4 @@
-#from datetime import datetime
+from datetime import date, datetime, time
 from pydantic import BaseModel
 
 class TaskBase(BaseModel):
@@ -9,9 +9,19 @@ class TaskDisplay(BaseModel):
     title:str
     description:str
     task_status:str
-    priority:str 
+    priority:str
+    flag:bool
+    date:date
+    time:time
     folder_id:int 
-    #due_date: datetime  
+
+    class Config:
+      orm_mode = True
+      json_encoders = {
+            date: lambda v: v.strftime("%d.%m.%Y"),
+            time: lambda v: v.strftime("%H:%M")
+        }
+
 
 class FolderDisplay(BaseModel):
     title:str
