@@ -16,13 +16,13 @@ def create_folder(Folder_name:str,db:Session=Depends(get_db), token: str = Depen
 
 #Get all folders
 @router.get('/all')
-def get_all_folders(db:Session=Depends(get_db), token: str = Depends(oauth2_scheme)):
-    return db_folders.get_all_folders(db)
+def get_all_folders(db:Session=Depends(get_db),current_user:DbUser = Depends(get_current_user), token: str = Depends(oauth2_scheme)):
+    return db_folders.get_all_folders(db,current_user)
 
 #Get folder
 @router.get('/{id}')
-def get_folder(folder_id:int,db:Session=Depends(get_db), token: str = Depends(oauth2_scheme)):
-    return db_folders.get_folder(db,folder_id)
+def get_folder(folder_id:int,db:Session=Depends(get_db),current_user:DbUser = Depends(get_current_user), token: str = Depends(oauth2_scheme)):
+    return db_folders.get_folder(db,folder_id, current_user)
 
 #Update name of folder
 @router.put('/{id}')

@@ -26,17 +26,23 @@ def create_folder(db:Session,folder_name:str):
     db.refresh(new_folder)
     return new_folder
 
-#Read all folders and tasks
-def get_all_folders(db:Session):
-    folders_with_tasks = db.query(DbFolder).options(joinedload(DbFolder.tasks)).all()
-    return {'folders': folders_with_tasks}
+def get_all_folders(db:Session,current_user):
+    folders=db.query(DbFolder).all()
+    folders_with_tasks = [
+        {
+            'folder': folder,
+            'tasks': db.query(DbTask).filter((DbTask.folder_id == folder.id)&(DbTask.user_id == current_user.id)).all()
+        }
+        for folder in folders
+    ]
+    return folders_with_tasks
 
 #Read specific folder and tasks from it
-def get_folder(db:Session,id:int):
+def get_folder(db:Session,id:int,current_user):
     folder=db.query(DbFolder).filter(DbFolder.id==id).first()
     if not folder:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f'Folder with id {id} not found') 
-    tasks=db.query(DbTask).filter(DbTask.folder_id==id).all() 
+    tasks=db.query(DbTask).filter((DbTask.folder_id==id) & (DbTask.user_id==current_user.id)).all() 
     return {'folder':folder,'tasks':tasks}
 
 #Update name of the folder

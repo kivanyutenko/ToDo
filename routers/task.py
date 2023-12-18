@@ -5,7 +5,7 @@ from schemas import TaskBase, TaskDisplay
 from sqlalchemy.orm import Session
 from db.database import get_db
 from db import db_tasks
-from typing import List, Optional
+from typing import List
 from auth.oauth2 import get_current_user, oauth2_scheme
 
 router=APIRouter( prefix='/task',
@@ -17,7 +17,6 @@ def create_task(request: TaskBase,
                 db: Session=Depends(get_db),
                 priority: str = Query("Normal", enum=['Low', 'Normal', 'High','Critical']), token: str = Depends(oauth2_scheme),
                 current_user: DbUser = Depends(get_current_user)):
-               # deadline:str=Query(...,enum=['False','True'])):
     return db_tasks.create_task(db,request,priority,current_user)
 
 #Read all tasks
