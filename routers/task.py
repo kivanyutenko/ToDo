@@ -15,18 +15,18 @@ router=APIRouter( prefix='/task',
 @router.post('/new',response_model=TaskDisplay)
 def create_task(request: TaskBase,
                 db: Session=Depends(get_db),
-                priority: str = Query("Normal", enum=['Low', 'Normal', 'High','Critical']), token: str = Depends(oauth2_scheme),
+                priority: str = Query("Normal", enum=['Low', 'Normal', 'High','Critical']),
                 current_user: DbUser = Depends(get_current_user)):
     return db_tasks.create_task(db,request,priority,current_user)
 
 #Read all tasks
 @router.get('/all',response_model=List[TaskDisplay])
-def get_all_tasks(db:Session=Depends(get_db), token: str = Depends(oauth2_scheme),current_user: DbUser = Depends(get_current_user)):
+def get_all_tasks(db:Session=Depends(get_db),current_user: DbUser = Depends(get_current_user)): #, token: str = Depends(oauth2_scheme)
     return db_tasks.get_all_tasks(db,current_user)
 
 #Read one task
 @router.get('/{id}',response_model=TaskDisplay)
-def get_task(id:int,db:Session=Depends(get_db), token: str = Depends(oauth2_scheme),current_user: DbUser = Depends(get_current_user)):
+def get_task(id:int,db:Session=Depends(get_db),current_user: DbUser = Depends(get_current_user)):
     return db_tasks.get_task(db,id,current_user)
 
 
@@ -39,7 +39,6 @@ def update_task(id:int,
                 priority: str = Query('Normal', enum=['Low', 'Normal', 'High','Critical']),
                 folder_id:int=Query("1"),
                 flag:bool=Query(False,enum=[False,True]), 
-                token: str = Depends(oauth2_scheme),
                 current_user: DbUser = Depends(get_current_user),
                 date: str = Query(..., alias="dd.mm.yyyy"),
                 time:str=Query(...,alias="hh:mm")
@@ -49,7 +48,7 @@ def update_task(id:int,
     return db_tasks.update_task(id,request,db,status,priority,flag,date_iso,time_iso,folder_id,current_user)
 
 @router.delete('/{id}')
-def delete_task(id:int=None, db: Session = Depends(get_db),delete_all:bool=Query(...,enum=[False,True]), token: str = Depends(oauth2_scheme), current_user: DbUser = Depends(get_current_user)):
+def delete_task(id:int=None, db: Session = Depends(get_db),delete_all:bool=Query(...,enum=[False,True]),current_user: DbUser = Depends(get_current_user)):
     if delete_all:
         return db_tasks.delete_all_tasks(db, current_user)
     else:

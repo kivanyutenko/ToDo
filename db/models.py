@@ -24,6 +24,8 @@ class DbFolder(Base):
     id=Column(Integer, primary_key=True, index=True)
     title=Column(String,index=True)
     tasks = relationship("DbTask", back_populates="folder", foreign_keys=[DbTask.folder_id])
+    user_id = Column(Integer, ForeignKey('users.id'))
+    user = relationship('DbUser', back_populates='folders')
 
 class DbUser(Base):
   __tablename__ = 'users'
@@ -32,3 +34,4 @@ class DbUser(Base):
   email = Column(String)
   password = Column(String)
   items = relationship('DbTask', back_populates='user', foreign_keys=[DbTask.user_id])
+  folders = relationship('DbFolder', back_populates='user', cascade='all, delete-orphan')
