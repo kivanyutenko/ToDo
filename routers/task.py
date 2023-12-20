@@ -8,11 +8,11 @@ from db import db_tasks
 from typing import List
 from auth.oauth2 import get_current_user, oauth2_scheme
 
-router=APIRouter( prefix='/task',
-                 tags=['task'])
+router=APIRouter( prefix='/tasks',
+                 tags=['tasks'])
 
 #Create task
-@router.post('/new',response_model=TaskDisplay)
+@router.post('/',response_model=TaskDisplay)
 def create_task(request: TaskBase,
                 db: Session=Depends(get_db),
                 priority: str = Query("Normal", enum=['Low', 'Normal', 'High','Critical']),
@@ -20,7 +20,7 @@ def create_task(request: TaskBase,
     return db_tasks.create_task(db,request,priority,current_user)
 
 #Read all tasks
-@router.get('/all',response_model=List[TaskDisplay])
+@router.get('/',response_model=List[TaskDisplay])
 def get_all_tasks(db:Session=Depends(get_db),current_user: DbUser = Depends(get_current_user)): #, token: str = Depends(oauth2_scheme)
     return db_tasks.get_all_tasks(db,current_user)
 
