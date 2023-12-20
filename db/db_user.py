@@ -1,12 +1,24 @@
+from db.database import SessionLocal
 from db.db_tasks import delete_all_tasks
 from db.hash import Hash
 from sqlalchemy.orm.session import Session
 from schemas import UserBase
-from db.models import DbUser
+from db.models import DbFolder, DbUser
 from fastapi import HTTPException, status
+from sqlalchemy_utils import database_exists
 
 
 def create_user(db: Session, request: UserBase):
+  #Adding 'Main' in table folders
+  if database_exists('sqlite:///./tasks_database.db'):
+      db=SessionLocal()
+      main_folder=db.query(DbFolder).filter(DbFolder.title=='Main').first()
+      if main_folder is None:
+          main_folder=DbFolder(title="Main")
+          db.add(main_folder)
+          db.commit()
+          db.refresh(main_folder)
+          db.close()
   new_user = DbUser(
     username = request.username,
     email = request.email,
