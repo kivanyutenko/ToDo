@@ -2,7 +2,6 @@ from sqlalchemy.orm.session import Session
 from db.database import SessionLocal
 from db.models import DbFolder, DbTask
 from fastapi import HTTPException,status
-from sqlalchemy.orm import joinedload
 from sqlalchemy_utils import database_exists
 
 #Adding 'Main' in table folders

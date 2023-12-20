@@ -1,9 +1,8 @@
-from typing import List
 from fastapi import APIRouter,Depends
 from db import db_folders
 from sqlalchemy.orm import Session
 from db.database import get_db
-from auth.oauth2 import get_current_user, oauth2_scheme
+from auth.oauth2 import get_current_user
 from db.models import DbUser
 
 

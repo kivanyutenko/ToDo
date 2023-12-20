@@ -1,21 +1,26 @@
-from datetime import datetime,date,time
 from sqlalchemy.orm.session import Session
 from db.models import DbFolder, DbTask, DbUser
 from schemas import TaskBase
 from fastapi import  HTTPException, status
 
 #Creating new task. By default it's status is 'New' and folder is 'Main'
-def create_task(db:Session,request:TaskBase,option,current_user):
+def create_task(db:Session,request:TaskBase,status,option,folder_id,flag,date_iso,time_iso,current_user,out_image_url):
+    folder=db.query(DbFolder).filter(DbFolder.id==folder_id).first()
+    if not folder:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f'Folder with id {folder_id} not found')
+    if folder.user_id is not None and current_user.id != folder.user_id:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail='You are not allowed to place task in this folder') 
     new_task=DbTask(
         title=request.title,
         description=request.description,
-        task_status='New',
+        task_status=status,
         priority=option,
-        flag=False,
-        date=datetime.now().date(),
-        time=datetime.now().time(),
-        folder_id=1,
-        user_id=current_user.id
+        date=date_iso,
+        time=time_iso,
+        flag=flag,
+        folder_id=folder_id,
+        user_id=current_user.id,
+        image_url=out_image_url,
     )
     db.add(new_task)
     db.commit()
@@ -38,7 +43,7 @@ def get_task(db:Session,id:int,current_user):
     return task
 
 #Update  task
-def update_task(id:int,request:TaskBase,db:Session,Status:str,priority:str,flag:bool,date_iso,time_iso,folder_id:int,current_user,image_url,image_url_type):
+def update_task(id:int,request:TaskBase,db:Session,Status:str,priority:str,flag:bool,date_iso,time_iso,folder_id:int,current_user,image_url):
     task=db.query(DbTask).filter(DbTask.id==id).first()
     folder=db.query(DbFolder).filter(DbFolder.id==folder_id).first()
     if not task:
@@ -59,7 +64,6 @@ def update_task(id:int,request:TaskBase,db:Session,Status:str,priority:str,flag:
         DbTask.date:date_iso,
         DbTask.time:time_iso,
         DbTask.image_url:image_url,
-        DbTask.image_url_type:image_url_type
     })
     db.commit()
     return 'Success'

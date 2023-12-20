@@ -6,12 +6,6 @@ class TaskBase(BaseModel):
     title:str='Task'
     description:str='Something to do'
 
-class TaskUpdate(BaseModel):
-    title:str='Task'
-    description:str='Something to do'
-    image_url: Optional[str] = None
-    image_url_type: Optional[str] = None    
-
 class TaskDisplay(BaseModel):
     title:str
     description:str
@@ -22,7 +16,6 @@ class TaskDisplay(BaseModel):
     time:time
     folder_id:int
     image_url: Optional[str] = None
-    image_url_type: Optional[str] = None 
 
     class Config:
       orm_mode = True
