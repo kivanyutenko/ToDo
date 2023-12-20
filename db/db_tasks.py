@@ -38,7 +38,7 @@ def get_task(db:Session,id:int,current_user):
     return task
 
 #Update  task
-def update_task(id:int,request:TaskBase,db:Session,Status:str,priority:str,flag:bool,date_iso,time_iso,folder_id:int,current_user):
+def update_task(id:int,request:TaskBase,db:Session,Status:str,priority:str,flag:bool,date_iso,time_iso,folder_id:int,current_user,image_url,image_url_type):
     task=db.query(DbTask).filter(DbTask.id==id).first()
     folder=db.query(DbFolder).filter(DbFolder.id==folder_id).first()
     if not task:
@@ -47,7 +47,7 @@ def update_task(id:int,request:TaskBase,db:Session,Status:str,priority:str,flag:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f'Folder with id {folder_id} not found') 
     if current_user.id != task.user_id:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail='You are not allowed to update this task')
-    if current_user.id !=DbFolder.user_id:
+    if folder.user_id is not None and current_user.id != folder.user_id:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail='You are not allowed to place task in this folder')
     db.query(DbTask).filter(DbTask.id == id).update({
         DbTask.title: request.title,
@@ -57,7 +57,9 @@ def update_task(id:int,request:TaskBase,db:Session,Status:str,priority:str,flag:
         DbTask.flag:flag,
         DbTask.folder_id:folder_id,
         DbTask.date:date_iso,
-        DbTask.time:time_iso
+        DbTask.time:time_iso,
+        DbTask.image_url:image_url,
+        DbTask.image_url_type:image_url_type
     })
     db.commit()
     return 'Success'

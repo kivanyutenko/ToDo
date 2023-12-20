@@ -18,6 +18,8 @@ class DbTask(Base):
     folder=relationship("DbFolder", back_populates="tasks", foreign_keys=[folder_id])
     user_id=Column(Integer, ForeignKey("users.id", ondelete='CASCADE')) 
     user = relationship("DbUser", back_populates='items',foreign_keys=[user_id])
+    image_url = Column(String, nullable=True)
+    image_url_type = Column(String, nullable=True)
 
 class DbFolder(Base):
     __tablename__='folders'

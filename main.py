@@ -4,7 +4,7 @@ from db import models
 from db.database import engine
 from auth import authentication
 from fastapi.middleware.cors import CORSMiddleware
-
+from fastapi.staticfiles import StaticFiles
 
 app=FastAPI()
 
@@ -14,6 +14,8 @@ app.include_router(folder.router)
 app.include_router(user.router)
 
 models.Base.metadata.create_all(engine)
+
+app.mount('/images', StaticFiles(directory='images'), name='images')
 
 origins = [
   'http://localhost:3000',
