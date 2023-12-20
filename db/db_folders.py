@@ -1,19 +1,6 @@
 from sqlalchemy.orm.session import Session
-from db.database import SessionLocal
 from db.models import DbFolder, DbTask
 from fastapi import HTTPException,status
-from sqlalchemy_utils import database_exists
-
-#Adding 'Main' in table folders
-db=SessionLocal()
-if database_exists('sqlite:///./tasks_database.db'): 
-    main_folder=db.query(DbFolder).filter(DbFolder.title=='Main').first()
-    if main_folder is None:
-        main_folder=DbFolder(title="Main")
-        db.add(main_folder)
-        db.commit()
-        db.refresh(main_folder)
-db.close()
 
 #Create new folder
 def create_folder(db:Session,folder_name:str,current_user):

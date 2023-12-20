@@ -37,8 +37,8 @@ def create_task(request: TaskBase,
                 priority: str = Query("Normal", enum=['Low', 'Normal', 'High','Critical']),
                 folder_id:int=Query("1"),
                 flag:bool=Query(False,enum=[False,True]),
-                date: str = Query(datetime.now().date().strftime("%d.%m.%Y"), alias="dd.mm.yyyy"),
-                time: str = Query(datetime.now().time().strftime("%H:%M"), alias="hh:mm"),
+                date: str = Query(datetime.now().date().strftime("%d.%m.%Y")),
+                time: str = Query(datetime.now().time().strftime("%H:%M")),
                 current_user: DbUser = Depends(get_current_user),
                 image_url:str=Query(None)):
     date_iso = datetime.strptime(date, "%d.%m.%Y").date()
@@ -66,8 +66,8 @@ def update_task(id:int,
                 folder_id:int=Query("1"),
                 flag:bool=Query(False,enum=[False,True]), 
                 current_user: DbUser = Depends(get_current_user),
-                date: str = Query(datetime.now().date().strftime("%d.%m.%Y"), alias="dd.mm.yyyy"),
-                time: str = Query(datetime.now().time().strftime("%H:%M"), alias="hh:mm"),
+                date: str = Query(datetime.now().date().strftime("%d.%m.%Y")),
+                time: str = Query(datetime.now().time().strftime("%H:%M")),
                 image_url:str=Query(None)):
     date_iso = datetime.strptime(date, "%d.%m.%Y").date()
     time_iso = datetime.strptime(time, "%H:%M").time()
