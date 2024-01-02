@@ -1,28 +1,8 @@
-from datetime import date, datetime, time
+from datetime import date, time
+from typing import Optional
 from pydantic import BaseModel
-<<<<<<< Updated upstream
-=======
 from typing import Optional, List
 
-
-class TagBase(BaseModel):
-    name: str
-
-class TagDisplay(BaseModel):
-    id: int
-    name: str
-
->>>>>>> Stashed changes
-
-class TaskBase(BaseModel):
-    title:str='Task'
-    description:str='Something to do'
-<<<<<<< Updated upstream
-=======
-    image_url: Optional[str] = None
-    image_url_type: Optional[str] = None
-    tags: Optional[List[TagBase]] = None
->>>>>>> Stashed changes
 
 class TaskDisplay(BaseModel):
     title:str
@@ -32,13 +12,9 @@ class TaskDisplay(BaseModel):
     flag:bool
     date:date
     time:time
-    folder_id:int 
-<<<<<<< Updated upstream
-=======
+    folder_id:int
     image_url: Optional[str] = None
-    image_url_type: Optional[str] = None
-    tags: Optional[List[TagDisplay]] = None
->>>>>>> Stashed changes
+    app_tag: Optional[str] = None
 
     class Config:
       orm_mode = True
@@ -46,6 +22,19 @@ class TaskDisplay(BaseModel):
             date: lambda v: v.strftime("%d.%m.%Y"),
             time: lambda v: v.strftime("%H:%M")
         }
+
+
+class TagBase(BaseModel):
+    name: str
+
+class TagDisplay(BaseModel):
+    id: int
+    name: str
+    associated_tasks: List[str] = []
+  
+class TaskBase(BaseModel):
+    title:str='Task'
+    description:str='Something to do'
 
 
 class FolderDisplay(BaseModel):
@@ -61,4 +50,3 @@ class UserDisplay(BaseModel):
   email: str
   class Config():
     orm_mode = True
-
