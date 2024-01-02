@@ -1,22 +1,25 @@
 from db.database import Base
-from sqlalchemy import Boolean, Column,Date,Time,DateTime, Table
+from sqlalchemy import Boolean, Column,Date,Time, Table
 from sqlalchemy.sql.sqltypes import Integer, String
 from sqlalchemy.sql.schema import ForeignKey
 from sqlalchemy.orm import relationship
 
-
-tag_task_association = Table(
-    'tag_task_association',
+# Define an association table to create the many-to-many relationship
+task_tag_association = Table(
+    'task_tag_association',
     Base.metadata,
-    Column('tag_id', Integer, ForeignKey('tags.id')),
-    Column('task_id', Integer, ForeignKey('tasks.id'))
+    Column('task_id', Integer, ForeignKey('tasks.id')),
+    Column('tag_id', Integer, ForeignKey('app_tags.id'))
 )
 
-class Tag(Base):
-    __tablename__ = 'tags'
+
+class DbTag(Base):
+    __tablename__ = 'app_tags'
     id = Column(Integer, primary_key=True)
     name = Column(String)
-
+    user_id=Column(Integer, ForeignKey("users.id", ondelete='CASCADE'))
+    user = relationship("DbUser", back_populates='app_tags')
+    tasks = relationship("DbTask", secondary=task_tag_association, back_populates="app_tags")
 
 class DbTask(Base):
     __tablename__='tasks'
@@ -32,13 +35,9 @@ class DbTask(Base):
     folder=relationship("DbFolder", back_populates="tasks", foreign_keys=[folder_id])
     user_id=Column(Integer, ForeignKey("users.id", ondelete='CASCADE')) 
     user = relationship("DbUser", back_populates='items',foreign_keys=[user_id])
-<<<<<<< Updated upstream
-=======
     image_url = Column(String, nullable=True)
-    image_url_type = Column(String, nullable=True)
-    tags = relationship("Tag", secondary=tag_task_association, back_populates="tasks")
->>>>>>> Stashed changes
-
+    app_tags = relationship("DbTag", secondary=task_tag_association, back_populates="tasks")
+    
 class DbFolder(Base):
     __tablename__='folders'
     id=Column(Integer, primary_key=True, index=True)
@@ -54,12 +53,5 @@ class DbUser(Base):
   email = Column(String)
   password = Column(String)
   items = relationship('DbTask', back_populates='user', foreign_keys=[DbTask.user_id])
-<<<<<<< Updated upstream
   folders = relationship('DbFolder', back_populates='user', cascade='all, delete-orphan')
-=======
-
-
-
-
-
->>>>>>> Stashed changes
+  app_tags = relationship('DbTag', back_populates='user', foreign_keys=[DbTag.user_id] )
