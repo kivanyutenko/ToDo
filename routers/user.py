@@ -8,8 +8,8 @@ from db import db_user
 from auth.oauth2 import get_current_user, oauth2_scheme
 
 router = APIRouter(
-  prefix='/user',
-  tags=['user']
+  prefix='/users',
+  tags=['users']
 )
 
 # Create user
@@ -18,7 +18,7 @@ def create_user(request: UserBase, db: Session = Depends(get_db)):
   return db_user.create_user(db, request)
 
 # Read all users
-@router.get('/all', response_model=List[UserDisplay])
+@router.get('/', response_model=List[UserDisplay])
 def get_all_users(db: Session = Depends(get_db), token: str = Depends(oauth2_scheme)):
   return db_user.get_all_users(db)
 
