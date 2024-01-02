@@ -1,21 +1,20 @@
-from typing import List
 from fastapi import APIRouter,Depends
 from db import db_folders
 from sqlalchemy.orm import Session
 from db.database import get_db
-from auth.oauth2 import get_current_user, oauth2_scheme
+from auth.oauth2 import get_current_user
 from db.models import DbUser
 
 
-router=APIRouter( prefix='/folder',
-                 tags=['folder'])
+router=APIRouter( prefix='/folders',
+                 tags=['folders'])
 #Create folder
-@router.post('/new')
+@router.post('/')
 def create_folder(Folder_name:str,db:Session=Depends(get_db),current_user:DbUser = Depends(get_current_user)):
     return db_folders.create_folder(db,Folder_name,current_user)
 
 #Get all folders
-@router.get('/all')
+@router.get('/')
 def get_all_folders(db:Session=Depends(get_db),current_user:DbUser = Depends(get_current_user)):
     return db_folders.get_all_folders(db,current_user)
 
