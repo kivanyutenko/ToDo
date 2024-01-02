@@ -65,23 +65,34 @@ def get_task(db:Session,id:int,current_user):
     return task
 
 #Update  task
-def update_task(id:int,request:TaskBase,db:Session,Status:str,priority:str,flag:bool,date_iso,time_iso,folder_id:int,current_user,image_url,app_tag):
-    task=db.query(DbTask).filter(DbTask.id==id).first()
-    folder=db.query(DbFolder).filter(DbFolder.id==folder_id).first()
+def update_task(id: int, request: TaskBase, db: Session, Status: str, priority: str, flag: bool, date_iso, time_iso, folder_id: int, current_user, image_url, app_tag):
+    task = db.query(DbTask).filter(DbTask.id == id).first()
+    folder = db.query(DbFolder).filter(DbFolder.id == folder_id).first()
+
     if not task:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f'Task with id {id} not found')
     if not folder:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f'Folder with id {folder_id} not found') 
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f'Folder with id {folder_id} not found')
     if current_user.id != task.user_id:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail='You are not allowed to update this task')
     if folder.user_id is not None and current_user.id != folder.user_id:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail='You are not allowed to place task in this folder')
-    
+
+    selected_tags = []
     if app_tag:
-        selected_tags = db.query(DbTag).filter(DbTag.name.in_(app_tag)).all()
-    else:
-        selected_tags = []
-    
+        existing_tags = db.query(DbTag).filter(DbTag.name.in_(app_tag)).all()
+        existing_tag_names = {tag.name for tag in existing_tags}
+
+        for tag_name in app_tag:
+            if tag_name not in existing_tag_names:
+                new_tag = DbTag(name=tag_name, user_id=current_user.id)
+                db.add(new_tag)
+                db.commit()
+                db.refresh(new_tag)
+                selected_tags.append(new_tag)
+            else:
+                selected_tags.extend([tag for tag in existing_tags if tag.name == tag_name])
+
     task.title = request.title
     task.description = request.description
     task.task_status = Status
