@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from routers import task,folder,user
+from routers import task,folder,user, tag
 from db import models
 from db.database import engine
 from auth import authentication
@@ -12,10 +12,9 @@ app.include_router(authentication.router)
 app.include_router(task.router)
 app.include_router(folder.router)
 app.include_router(user.router)
+app.include_router(tag.router)
 
 models.Base.metadata.create_all(engine)
-
-app.mount('/images', StaticFiles(directory='images'), name='images')
 
 origins = [
   'http://localhost:3000',

@@ -2,6 +2,7 @@ fastapi
 uvicorn
 sqlalchemy
 sqlalchemy_utils
+sqlalchemy.orm
 passlib
 bcrypt
 python-multipart
